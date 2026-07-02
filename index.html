@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<title>New Website</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root{
+  --ink: #0B0E14;
+  --panel-2: #12161F;
+  --border: #232838;
+  --paper: #F5F3EE;
+  --muted: #7C8394;
+  --blue: #4C7CFF;
+  --blue-dim: #33508f;
+  --green: #3ECF8E;
+}
+
+*{ box-sizing: border-box; }
+
+html, body{ margin:0; padding:0; height:100%; }
+
+body{
+  min-height: 100dvh;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(650px 420px at 50% -10%, rgba(76,124,255,.16), transparent 70%),
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: auto, 42px 42px, 42px 42px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.window{
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.chrome{
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: rgba(18,22,31,.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+
+.dots{ display:flex; gap: 6px; flex-shrink: 0; }
+.dots span{ width: 9px; height: 9px; border-radius: 50%; background: var(--border); }
+
+.addr{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 7px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 0;
+  max-width: 320px;
+}
+.addr .lock{ flex-shrink: 0; opacity: .6; }
+.addr .url{ overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #A9B0C0; }
+
+.progress{
+  display: flex;
+  gap: 5px;
+  padding: 0 20px;
+  margin-top: -1px;
+}
+.progress .seg{
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress .seg i{
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--blue);
+  transition: width .35s ease;
+}
+.progress .seg.done i{ width: 100%; }
+.progress .seg.done.final i{ background: var(--green); }
+
+.content{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px 24px 56px;
+}
+
+.screen{ display: none; }
+.screen.active{ display: block; animation: rise .45s ease both; }
+@media (prefers-reduced-motion: no-preference){
+  @keyframes rise{ from{ opacity: 0; transform: translateY(10px); } to{ opacity: 1; transform: translateY(0); } }
+}
+
+.eyebrow{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--blue);
+  letter-spacing: .06em;
+  margin: 0 0 14px;
+}
+.eyebrow .cursor{
+  width: 7px; height: 14px;
+  background: var(--blue);
+  display: inline-block;
+}
+@media (prefers-reduced-motion: no-preference){
+  .eyebrow .cursor{ animation: blink 1s steps(1) infinite; }
+  @keyframes blink{ 50%{ opacity: 0; } }
+}
+
+h1{
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: clamp(28px, 6vw, 42px);
+  line-height: 1.15;
+  margin: 0 0 14px;
+  letter-spacing: -.01em;
+}
+
+.sub{ color: var(--muted); font-size: clamp(15px, 2.4vw, 17px); line-height: 1.55; margin: 0 0 28px; max-width: 46ch; }
+
+textarea{
+  width: 100%;
+  min-height: 150px;
+  resize: vertical;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--paper);
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  padding: 18px;
+  outline: none;
+  transition: border-color .15s ease;
+}
+textarea::placeholder{ color: #4A5163; }
+textarea:focus{ border-color: var(--blue); box-shadow: 0 0 0 3px rgba(76,124,255,.18); }
+
+.btn{
+  appearance: none;
+  border: none;
+  width: 100%;
+  margin-top: 20px;
+  padding: 16px 22px;
+  border-radius: 11px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform .12s ease, opacity .15s ease, box-shadow .15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.btn:focus-visible{ outline: 2px solid var(--paper); outline-offset: 2px; }
+.btn-blue{ background: var(--blue); color: #06070A; }
+.btn-blue:hover{ box-shadow: 0 14px 30px -12px rgba(76,124,255,.55); transform: translateY(-1px); }
+.btn-blue:disabled{ background: var(--blue-dim); color: #202638; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-green{ background: var(--green); color: #06140D; }
+.btn-green:hover{ box-shadow: 0 14px 30px -12px rgba(62,207,142,.55); transform: translateY(-1px); }
+.btn-outline{ background: transparent; border: 1px solid var(--border); color: var(--paper); }
+.btn-outline:hover{ border-color: var(--muted); }
+
+.hint{ margin-top: 12px; font-size: 12px; color: var(--muted); text-align: center; min-height: 14px; }
+
+.quote{
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--blue);
+  border-radius: 10px;
+  padding: 16px 18px;
+  font-size: 13px;
+  color: #A9B0C0;
+  line-height: 1.5;
+  margin-bottom: 28px;
+  max-height: 110px;
+  overflow-y: auto;
+}
+.quote span{ font-family: 'JetBrains Mono', monospace; color: var(--muted); font-size: 11px; display: block; margin-bottom: 6px; }
+
+.section-label{
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: .05em;
+  margin: 30px 0 14px;
+  text-transform: uppercase;
+}
+.section-label:first-of-type{ margin-top: 0; }
+
+.contact-row{ display: flex; flex-direction: column; gap: 10px; }
+.contact-link{
+  display: flex; align-items: center; gap: 12px;
+  padding: 15px 16px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  color: var(--paper);
+  text-decoration: none;
+  font-size: 14px;
+  transition: border-color .15s ease, transform .12s ease;
+}
+.contact-link:hover{ border-color: var(--blue); transform: translateY(-1px); }
+.contact-link .label{ color: var(--muted); font-size: 12px; display: block; }
+.contact-link .value{ font-weight: 500; }
+
+.price-box{
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.price-box .from{ font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; display: block; }
+.price-box .amt{ font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 600; }
+
+.done-icon{
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(62,207,142,.12);
+  border: 1px solid rgba(62,207,142,.4);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 22px;
+}
+
+footer.foot{ text-align: center; padding: 20px 0 28px; font-size: 12px; color: #3E4456; font-family: 'JetBrains Mono', monospace; position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+
+<div class="window">
+  <div class="chrome">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="addr"><span class="lock">🔒</span><span class="url" id="urlBar">newsite.build/start</span></div>
+  </div>
+  <div class="progress">
+    <div class="seg done" id="seg1"><i></i></div>
+    <div class="seg" id="seg2"><i></i></div>
+    <div class="seg final" id="seg3"><i></i></div>
+  </div>
+
+  <div class="content">
+
+    <div class="screen active" id="screen1">
+      <p class="eyebrow"><span class="cursor"></span> let's build something</p>
+      <h1>Welcome. What do you want your website to look like?</h1>
+      <p class="sub">Describe it however you want — style, pages, colors, what it's for. No wrong answers.</p>
+      <textarea id="brief" placeholder="e.g. a clean one-page site for my clothing brand, dark background, shop link in the header, an about section..."></textarea>
+      <button class="btn btn-blue" id="toStep2" disabled>Continue →</button>
+      <p class="hint" id="hint1">Type a bit about your website to continue</p>
+    </div>
+
+    <div class="screen" id="screen2">
+      <p class="eyebrow"><span class="cursor"></span> reach me & lock it in</p>
+      <h1>Almost there.</h1>
+      <p class="sub">Send me your details however's easiest, then secure your spot with a deposit.</p>
+
+      <div class="quote" id="briefBox" style="display:none;">
+        <span>WHAT YOU DESCRIBED</span>
+        <span id="briefText"></span>
+      </div>
+
+      <p class="section-label">Contact me</p>
+      <div class="contact-row">
+        <a class="contact-link" href="https://instagram.com/nik.0_6" target="_blank" rel="noopener" style="padding:20px 18px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+          <span><span class="label">Instagram — DM me</span><span class="value" style="font-size:16px;">@nik.0_6</span></span>
+        </a>
+      </div>
+
+      <p class="section-label">Lock in your site</p>
+      <div class="price-box">
+        <span><span class="from">Starting deposit</span><span class="amt">$10</span></span>
+        <a class="btn btn-blue" style="width:auto; margin:0; padding:13px 22px;" href="https://paypal.me/KreshnikDushaj666/10" target="_blank" rel="noopener">Pay with PayPal</a>
+      </div>
+      <p class="hint" style="margin-bottom:6px;">Final price depends on what you need — we confirm it before you pay the rest.</p>
+
+      <button class="btn btn-green" id="toStep3">I've reached out / paid — Continue →</button>
+    </div>
+
+    <div class="screen" id="screen3" style="text-align:center;">
+      <div class="done-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3ECF8E" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <h1>You're set.</h1>
+      <p class="sub" style="margin-left:auto; margin-right:auto;">Got your request. I'll get back to you soon to kick things off.</p>
+      <a class="btn btn-outline" href="https://instagram.com/nik.0_6" target="_blank" rel="noopener">Follow along on Instagram</a>
+    </div>
+
+  </div>
+
+  <footer class="foot">made with newsite.build</footer>
+</div>
+
+<script>
+  const brief = document.getElementById('brief');
+  const toStep2 = document.getElementById('toStep2');
+  const hint1 = document.getElementById('hint1');
+  const urlBar = document.getElementById('urlBar');
+  const segs = { 1: document.getElementById('seg1'), 2: document.getElementById('seg2'), 3: document.getElementById('seg3') };
+
+  function sync(){
+    const val = brief.value.trim();
+    toStep2.disabled = val.length < 5;
+    hint1.textContent = val.length < 5 ? 'Type a bit about your website to continue' : '';
+  }
+  brief.addEventListener('input', sync);
+
+  function showScreen(n){
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen' + n).classList.add('active');
+    if(n === 1) urlBar.textContent = 'newsite.build/start';
+    if(n === 2) urlBar.textContent = 'newsite.build/contact';
+    if(n === 3) urlBar.textContent = 'newsite.build/done';
+    [1,2,3].forEach(i => segs[i].classList.toggle('done', i <= n));
+    window.scrollTo(0,0);
+  }
+
+  toStep2.addEventListener('click', () => {
+    const text = brief.value.trim();
+    if(text){
+      document.getElementById('briefBox').style.display = 'block';
+      document.getElementById('briefText').textContent = text;
+    }
+    showScreen(2);
+  });
+
+  document.getElementById('toStep3').addEventListener('click', () => showScreen(3));
+</script>
+
+</body>
+</html>
